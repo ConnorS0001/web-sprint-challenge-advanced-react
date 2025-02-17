@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import axios from 'axios'
 
 // Suggested initial states
 const initialMessage = ''
@@ -15,6 +16,8 @@ export default function AppFunctional(props) {
   const [steps, setSteps] = useState(initialSteps)
   const [email, setEmail] = useState(initialEmail)
   const [message, setMessage] = useState(initialMessage)
+  const baseURL = 'http://localhost:9000/api/result'
+
 
   function getXY(index) {
     // It it not necessary to have a state to track the coordinates.
@@ -25,7 +28,7 @@ export default function AppFunctional(props) {
     let y = Math.ceil((index + 1) / 3)
     
     return [x, y];
-  }
+  } 
 
   function getXYMessage(index) {  
     return (
@@ -86,11 +89,29 @@ export default function AppFunctional(props) {
 
   function onChange(evt) {
     // You will need this to update the value of the input.
+    setEmail(evt.target.value)
     
   }
 
   function onSubmit(evt) {
     // Use a POST request to send a payload to the server.
+    evt.preventDefault()
+    axios
+      .post(baseURL, {
+        "x": getXY(index)[0],
+        "y": getXY(index)[0],
+        "steps": steps,
+        "email": email 
+      })
+      .then((res) => {
+        reset()
+        setMessage(res.data.message)
+        document.getElementById('email').value='';
+      })
+      .catch((err) => {
+        alert(err)
+      })
+      
   }
 
   return (
@@ -118,15 +139,16 @@ export default function AppFunctional(props) {
         <button id="down" onClick={move} value={"down"}>DOWN</button>
         <button id="reset" onClick={reset}>reset</button>
       </div>
-      <form>
-        <input id="email" type="email" placeholder="type email"></input>
+      <form onSubmit={onSubmit}>
+        <input id="email" type="email" placeholder="type email" onChange={onChange}></input>
         <input id="submit" type="submit"></input>
       </form>
     </div>
   )
-}
+} 
 
-
+/* POST REQUEST */
+  // `{ "x": {getXY(index)[0], "y": {getXY(index)[1], "steps": {steps}, "email": {email} }`
 
 
 
