@@ -42,6 +42,7 @@ export default function AppFunctional(props) {
     setSteps(initialSteps)
     setEmail(initialEmail)
     setMessage(initialMessage)
+    document.getElementById('email').value='';
   }
 
   function getNextIndex(direction) {
@@ -90,7 +91,6 @@ export default function AppFunctional(props) {
   function onChange(evt) {
     // You will need this to update the value of the input.
     setEmail(evt.target.value)
-    
   }
 
   function onSubmit(evt) {
@@ -98,18 +98,18 @@ export default function AppFunctional(props) {
     evt.preventDefault()
     axios
       .post(baseURL, {
-        "x": getXY(index)[0],
-        "y": getXY(index)[0],
+        "email": email, 
         "steps": steps,
-        "email": email 
+        "x": getXY(index)[0],
+        "y": getXY(index)[1]
       })
       .then((res) => {
-        reset()
-        setMessage(res.data.message)
-        document.getElementById('email').value='';
+        console.log(res)
+        setMessage(res.data.message)     
+        setEmail(initialEmail)
       })
       .catch((err) => {
-        alert(err)
+        setMessage(err.response.data.message)
       })
       
   }
@@ -118,7 +118,7 @@ export default function AppFunctional(props) {
     <div id="wrapper" className={props.className}>
       <div className="info">
         <h3 id="coordinates">{getXYMessage(index)}</h3>
-        <h3 id="steps">You moved {steps} times</h3>
+        <h3 id="steps">{steps == 1 ? `You moved ${steps} time` : `You moved ${steps} times`}</h3>
       </div>
       <div id="grid">
         {
@@ -140,37 +140,9 @@ export default function AppFunctional(props) {
         <button id="reset" onClick={reset}>reset</button>
       </div>
       <form onSubmit={onSubmit}>
-        <input id="email" type="email" placeholder="type email" onChange={onChange}></input>
+        <input id="email" type="email" placeholder="type email" onChange={onChange} value={email}></input>
         <input id="submit" type="submit"></input>
       </form>
     </div>
   )
 } 
-
-/* POST REQUEST */
-  // `{ "x": {getXY(index)[0], "y": {getXY(index)[1], "steps": {steps}, "email": {email} }`
-
-
-
-///////////
-/* 
-
-CODE PLANNING
-------------
-
-  The grid {
-    COORDINATES {
-      - use remainder (%) to find the x coordinate
-        (2%3=2, 7%3=1, etc)
-
-      - divide the index by 3 for the y coordinate 
-        (2/3 = < 1, 4/3=<2, etc.) 
-        use math.ceiling 
-        }
-
-    
-  }
-
-
-///////////
-*/
