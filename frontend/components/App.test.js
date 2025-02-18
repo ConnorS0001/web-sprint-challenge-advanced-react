@@ -1,5 +1,4 @@
 // Write your tests here
-import server from './backend/mock-server'
 import React from "react"
 import AppFunctional from "./AppFunctional"
 import { render, waitFor,screen } from "@testing-library/react"
